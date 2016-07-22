@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>一折数码</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.7.1/css/amazeui.min.css" />
+    <!--STYLES-->
+    <link rel="stylesheet" href="/Styles/amazeui.datetimepicker.css">
+    <link rel="stylesheet" href="/Styles/importer.css">
+    <!--STYLES END-->
+    <!--[if lt IE 9]>
+    <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+    <script src="http://cdn.amazeui.org/amazeui/2.7.1/js/amazeui.ie8polyfill.min.js"></script>
+    <![endif]-->
+    <!--[if (gte IE 9)|!(IE)]><!-->
+    <script src="http://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+    <!--<![endif]-->
+    <script src="http://cdn.amazeui.org/amazeui/2.7.1/js/amazeui.min.js"></script>
+    <script src="http://cdn.bootcss.com/jquery.form/3.51/jquery.form.min.js"></script>
+    <script src="http://cdn.bootcss.com/vue/1.0.26/vue.min.js"></script>
+    <script src="http://cdn.bootcss.com/vue-resource/0.9.3/vue-resource.min.js"></script>
+    <script src="//cdn.bootcss.com/plupload/2.1.8/plupload.full.min.js"></script>
+    <script src="http://qiniu.cdn.picfood.cn/js/qiniu.min.js"></script>
+    <script src="/Scripts/amazeui.datetimepicker.min.js"></script>
+    <script src="/Scripts/amazeui-pagination.min.js"></script>
+    <script>
+    (function ($) {
+      'use strict';
+
+      $(function () {
+        var $fullText = $('.admin-fullText');
+        $('#admin-fullscreen').on('click', function () {
+          $.AMUI.fullscreen.toggle();
+        });
+
+        $(document).on($.AMUI.fullscreen.raw.fullscreenchange, function () {
+          $fullText.text($.AMUI.fullscreen.isFullscreen ? '退出全屏' : '开启全屏');
+        });
+      });
+    })(jQuery);
+    </script>
+</head>
+<body>
+    <!--[if lte IE 9]>
+    <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
+      以获得更好的体验！</p>
+    <![endif]-->
+
+    <header class="am-topbar am-topbar-inverse admin-header">
+        <div class="am-topbar-brand">
+            <strong>一折数码</strong>
+            <small>后台管理</small>
+        </div>
+
+        <button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only"
+                data-am-collapse="{target: '#topbar-collapse'}">
+            <span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span>
+        </button>
+
+        <div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+            <ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+                <li class="am-dropdown" data-am-dropdown>
+                    <a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+                        <span class="am-icon-users"></span> 管理员 <span class="am-icon-caret-down"></span>
+                    </a>
+                    <ul class="am-dropdown-content">
+                        <li><a href="/User/Logout"><span class="am-icon-power-off"></span> 退出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="am-cf admin-main">
+
+        <!-- sidebar start -->
+        <div class="admin-sidebar am-offcanvas" id="admin-offcanvas">
+            <div class="am-offcanvas-bar admin-offcanvas-bar">
+                <ul class="am-list admin-sidebar-list">
+                    <li><a href="/Admin"><span class="am-icon-home"></span> 首页</a></li>
+                    <li><a href="/ManageUser"><span class="am-icon-table"></span> 用户</a></li>
+                    <li><a href="/ManageActivity"><span class="am-icon-table"></span> 活动</a></li>
+                    <li><a href="/ManageProduct"><span class="am-icon-table"></span> 商品</a></li>
+                    <li class="admin-parent">
+                        <a class="am-cf" data-am-collapse="{target: '#collapse-nav'}">
+                            <span class="am-icon-file"></span> 订单 <span class="am-icon-angle-right am-fr am-margin-right"></span>
+                        </a>
+                        <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav">
+                            <li>
+                                <a href="#" class="am-cf">
+                                    <span class="am-icon-check"></span> 待出库订单<span class="am-icon-star am-fr am-margin-right admin-icon-yellow"></span>
+                                </a>
+                            </li>
+                            @*<li><a href="admin-help.html"><span class="am-icon-puzzle-piece"></span> 帮助页</a></li>*@
+                        </ul>
+                    </li>
+                    <li><a href="/User/Logout"><span class="am-icon-sign-out"></span> 注销</a></li>
+                </ul>
+
+                <div class="am-panel am-panel-default admin-sidebar-panel">
+                    <div class="am-panel-bd">
+                        <p><span class="am-icon-bookmark"></span> 公告</p>
+                        <p>一折数码</p>
+                    </div>
+                </div>
+
+                @*<div class="am-panel am-panel-default admin-sidebar-panel">
+                    <div class="am-panel-bd">
+                        <p><span class="am-icon-tag"></span> wiki</p>
+                        <p>Welcome to the Amaze UI wiki!</p>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+        <!-- sidebar end -->
+        <!-- content start -->
+        <div class="admin-content">
+            @RenderBody()
+            <footer class="admin-content-footer">
+                <hr>
+                <p class="am-padding-left">© 2016 一折数码</p>
+            </footer>
+        </div>
+        <!-- content end -->
+
+    </div>
+
+    <a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu"
+       data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_AdminLayoutPage.cshtml";
+}
+
+<div class="admin-content-body">
+    <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf">
+            <strong class="am-text-primary am-text-lg">用户信息</strong>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="am-g">
+        <form class="am-form">
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">ID</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" disabled>
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">用户名</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" disabled value="@ViewBag.user.Name">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">手机号</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" disabled value="@ViewBag.user.PhoneNumber">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">邮箱</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" disabled value="@ViewBag.user.Email">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">角色</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <label class="am-checkbox">
+                  
+                        <input name="role" type="checkbox" value="option1" checked disabled> 普通用户
+                    </label>
+                    <label class="am-checkbox">
+                        <input name="role" type="checkbox" value="option2" disabled> 管理员
+                    </label>
+                    <label class="am-checkbox">
+                        <input name="role" type="checkbox" value="option3" disabled> 黑名单
+                    </label>
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-8 am-u-sm-offset-4 am-u-md-4 am-u-md-offset-2">
+                    <a href="/ManageUser/edit?id=@ViewBag.id" type="button" class="am-btn am-btn-primary am-btn-xs">修改角色</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

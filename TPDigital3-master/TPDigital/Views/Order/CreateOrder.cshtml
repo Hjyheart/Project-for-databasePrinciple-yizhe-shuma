@@ -1,0 +1,103 @@
+﻿
+@{
+    ViewBag.Title = "PayOrder";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+@{
+    var flag = ViewBag.flag;
+
+}
+<script src="~/Scripts/jquery.min.js"></script>
+@if (flag == 0)
+{
+    <div class="am-modal am-modal-alert" tabindex="-1" id="fail">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">尴尬</div>
+            <div class="am-modal-bd">
+                失败了！！
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" onclick="back()">确定</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#fail").modal();
+    </script>
+
+}
+else
+{
+    var productList = ViewBag.productList;
+    var quantityList = ViewBag.quantityList;
+    var receiver = ViewBag.receiver;
+
+    <div class="am-g">
+        <div class="am-u-sm-9 am-u-sm-centered">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">
+                    <h3 class="am-panel-title">订单商品一览</h3>
+                </div>
+                <table class="am-table">
+                    <thead>
+                        <tr>
+                            <th>预览图</th>
+                            <th>名称</th>
+                            <th>价格</th>
+                            <th>数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < productList.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @if (productList[i].ProductImageList.Count > 0)
+                                    {
+
+                                        <a href="/product/Show/@productList[i].ID">
+                                            <img src="@productList[i].ProductImageList[0].Image.URL" width="50" height="50" />
+                                        </a>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="/product/Show/@productList[i].ID">@productList[i].Name</a>
+                                </td>
+                                <td>￥ @productList[i].Price</td>
+                                <td>X @quantityList[i]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <hr />
+            <div class="am-panel am-panel-primary">
+                <div>
+                    <img class="am-u-sm-centered" src="http://laravelacademy.org/wp-content/uploads/2015/10/85f11057a0da8e252691d4118377d73f.jpg" style="max-height:250px;" />
+                </div>
+                <hr />
+                <div class="am-g">
+                    <div class="am-u-sm-9 am-u-sm-centered">
+                        <h3 class="am-text-center">密码</h3>
+                        <input type="password" class="am-form-field am-round" required />
+                        <br />
+                        <button class="am-btn am-btn-primary am-center" style="width:200px;" onclick="pay()">提交</button>
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function pay() {
+            var pay = $.post("./PayOrder",
+                {"id":@ViewBag.orderID}).done(function(data){
+                    window.location = "./Index";
+                });
+
+        }
+    </script>
+
+}
+

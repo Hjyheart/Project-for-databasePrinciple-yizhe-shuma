@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "MyBack";
+    Layout = "~/Views/Shared/_UserLayoutPage.cshtml";
+}
+
+@for (int i = 0; i < 4; i++)
+{
+    <div class="am-panel-group" id="accordion">
+        <div class="am-panel am-panel-danger">
+            <div class="am-panel-hd am-panel-title am-collapsed" data-am-collapse="{parent: '#accordion', target: '#back-@i'}" href="#">
+                <a href="#">
+                    <img src="https://d2jpzphjpce52c.cloudfront.net/system/production/image/image/000/008/849/8849/wysiwyg_bb3bf4574bb34f2e8e79.jpg" width="50" height="50" />
+                </a>
+                <a href="#"><span class="am-text-primary">    商品名称</span></a>    <span class="am-topbar-right">X @i</span>
+            </div>
+            <div id="back-@i" class="am-panel-collapse am-collapse" style="height: 0px;">
+                <div class="am-panel-bd">
+                    <h3>订单号：<span>1</span></h3>
+                    <hr />
+                    <h3>物流状态：<span class="am-badge am-badge-warning">未收货</span></h3>
+                    <div class="am-panel am-panel-default">
+                        <div class="am-panel-hd">
+                            <h3 class="am-panel-title">物流信息</h3>
+                            <h4>申通快递</h4>
+                            <h4>单号：123456</h4>
+                            <h4>收件人：洪嘉勇</h4>
+                        </div>
+                        <table class="am-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>地点</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int k = 0; k < 4; k++)
+                                {
+                                <tr>
+                                    <td>1</td>
+                                    <td>嘉定校区</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="am-panel-footer"></div>
+                    </div>
+                    <hr />
+                    <div class="am-panel am-panel-default">
+                        <div class="am-panel-hd">
+                        </div>
+                        <div class="am-panel-footer">订单日期</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

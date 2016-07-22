@@ -1,0 +1,234 @@
+﻿
+@{
+    ViewBag.Title = "Addr";
+    Layout = "~/Views/Shared/_UserLayoutPage.cshtml";
+}
+
+@using TPDigital.Data_Access_Layer.Data_View_Model;
+@model List<Receiver>
+
+@{
+    var provinces = ViewBag.provinces;
+}
+
+<style>
+    table {
+        padding: 4px;
+        font-size: 14px;
+    }
+
+    label {
+        margin-left: 0;
+    }
+</style>
+
+<h2>我的地址</h2>
+<div class="am-panel am-panel-default">
+    <div class="am-panel-hd">
+        <h3 class="am-panel-title">地址列表</h3>
+    </div>
+
+    <table class="am-table">
+        <thead>
+            <tr>
+                <th style="width:65px;">收货人</th>
+                <th>所在地区</th>
+                <th>详细地址</th>
+                <th>联系电话</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="receiver">
+            @if (@ViewBag.defalutReceiver != null) 
+            { 
+                <tr class="am-success">
+                    <td class="am-text-middle">@ViewBag.defalutReceiver.Name</td>
+                    <td class="am-text-middle">@ViewBag.defalutReceiver.Location.PrivinceName @ViewBag.defalutReceiver.Location.CityName</td>
+                    <td class="am-text-middle">@ViewBag.defalutReceiver.AddrDetail</td>
+                    <td class="am-text-middle">@ViewBag.defalutReceiver.PhoneNumber</td>
+                    <td id="@ViewBag.defalutReceiver.ID" class="am-text-middle">
+                        <a href="#" onclick="changeAddr(this)">修改</a> | <a href="#" onclick="deleteAddr(@ViewBag.defalutReceiver.ID)">删除</a>
+                    </td>
+                </tr>
+            }
+            @for (int k = 0; k < @Model.Count; k++)
+            {
+                <tr>
+                    <td id="name-@k" class="am-text-middle">@Model[k].Name</td>
+                    <td id="p-c-@k" class="am-text-middle">@Model[k].Location.PrivinceName @Model[k].Location.CityName</td>
+                    <td id="addr-detail-@k" class="am-text-middle">@Model[k].AddrDetail</td>
+                    <td id="phone-number-@k" class="am-text-middle">@Model[k].PhoneNumber</td>
+                    <td id="@Model[k].ID" class="am-text-middle">
+                        <a href="#" onclick="changeAddr(this)">修改</a> | <a href="#" onclick="deleteAddr(@Model[k].ID)">删除</a> | <a href="#" onclick="setDefaultAddr(@Model[k].ID)">设为默认</a>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="6">
+                    <button type="button"
+                            id="add_button"
+                            class="am-btn am-btn-success"
+                            data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0, width: 400, height: 600}">
+                        添加地址
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+        <div class="am-modal-dialog">
+            <div class="am-modal-bd">
+                <form class="am-form" action="~/Views/User/AddAddr">
+                    <fieldset>
+                        <legend>添加地址</legend>
+                        <input id="ID" type="hidden" value="">
+                        <div class="am-form-group">
+                            <label class="margin-left:0;" for="name">收货人</label>
+                            <input type="text" id="name" placeholder="输入收货人姓名">
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="province">省</label>
+                            <select name="province" id="province" onchange="changeSelect()">
+                                <option value="select" id="select">请输入省份</option>
+                                @foreach (var province in provinces)
+                                {
+                                    <option id="@province" value="@province">@province</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="city">市</label>
+                            <select name="city" id="city">
+                                <option value="select" id="select">请输入市区</option>
+                            </select>
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="addr_detail">详细地址</label>
+                            <input type="text" id="addr_detail" placeholder="请输入详细地址">
+                        </div>
+
+                        <div class="am-form-group">
+                            <label for="phone_number">联系电话</label>
+                            <input type="text" id="phone_number" placeholder="请输入联系电话" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                        </div>
+                        <input type="button" onclick="submitAddr()" class="am-btn am-btn-success" value="提交" />
+                        <input type="button" onclick="closeModal()" class="am-btn am-btn-danger" value="取消" />
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+
+    function changeSelect() {
+        var province = document.getElementById("province").value;
+        var login = $.post("/User/getCity",
+            { "province": province }
+            ).done(function (data) {
+
+                var citySelect = document.getElementById("city");
+                citySelect.options.length = 0;
+                citySelect.options.add(new Option("请输入市区", "select"));
+                for (var i = 0; i < data.length; i++) {
+                    citySelect.options.add(new Option(data[i], data[i]));
+                }
+
+            }).fail(function (data) {
+                alert("fail");
+            });
+
+    }
+
+    function closeModal() {
+        $('#doc-modal-1').modal('close');
+    }
+
+    function changeAddr(obj) {
+        var tr = obj.parentNode.parentNode;
+        $('#ID').val(obj.parentNode.id);
+        $('#name').val(tr.cells[0].innerHTML);
+        $('#province').val(tr.cells[1].innerHTML.split(' ')[0]);
+        $('#city').val(tr.cells[1].innerHTML.split(' ')[1]);
+        $('#addr_detail').val(tr.cells[2].innerHTML);
+        $('#phone_number').val(parseInt(tr.cells[3].innerHTML));
+        changeSelect();
+        var button = document.getElementById("add_button");
+        button.click();
+    }
+
+    function submitAddr() {
+        closeModal();
+        var id = $('#ID').val();
+        var name = $('#name').val();
+        var province = $('#province').val();
+        var city = $('#city').val();
+        var addr_detail = $('#addr_detail').val();
+        var phone_number = $('#phone_number').val();
+        if(id != ''){
+            $.post(
+            './UpdateAddr',
+            {'receiverID': id, 'name': name, 'addrDetail': addr_detail, 'phoneNumber': phone_number, 'privinceName': province, 'cityName': city },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('修改地址失败！');
+                }
+            }
+            );
+        }
+        else {
+            $.post(
+            './AddAddr',
+            { 'name': name, 'addrDetail': addr_detail, 'phoneNumber': phone_number, 'privinceName': province, 'cityName': city },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('添加地址失败！');
+                }
+            }
+            );
+        }
+    }
+
+    function deleteAddr(id) {
+        $.post(
+            './DeleteAddr',
+            { 'receiverID': id },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('删除地址失败！');
+                }
+            }
+            );
+    }
+
+    function setDefaultAddr(id) {
+        $.post(
+            './setDefaultAddr',
+            { 'id': id },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('设为默认地址失败！');
+                }
+            }
+            );
+    }
+</script>

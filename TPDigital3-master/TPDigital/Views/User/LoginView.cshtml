@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "LoginView";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+
+<style>
+    .header {
+        text-align: center;
+    }
+
+        .header h1 {
+            font-size: 200%;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .header p {
+            font-size: 14px;
+        }
+</style>
+<div class="header">
+    <div class="am-g">
+        <h1>一折数码</h1>
+    </div>
+    <hr />
+</div>
+<div class="am-g">
+    <div class="am-u-sm-4 am-u-sm-centered">
+        <h3>登录</h3>
+        <hr />
+
+        <form class="am-form">
+            @Html.AntiForgeryToken()
+            <label for="email">用户名:</label>
+            <div id="emailDiv" class="am-form-feedback am-form-group">
+                <input type="text" name="email" class="am-form-field am-round" id="email" value="">
+            </div>
+            <br>
+            <label for="password">密码:</label>
+            <div class="am-form-feedback am-form-group" id="passwordDiv">
+                <input type="password" name="password" class="am-form-field am-round" id="password" value="">
+            </div>
+            <label for="remember-me">
+                <input id="remember-me" type="checkbox">
+                记住密码
+            </label>
+            <br>
+            <br />
+            <div class="am-center">
+                <button type="button" onclick="login()" name=""class="am-btn am-btn-primary am-center" style="width:200px;">登录</button>
+            </div>
+            <hr>
+        </form>
+    </div>
+</div>
+
+
+<script>
+        function login() {
+            var username = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var remember = document.getElementById("remember-me").checked;
+
+            if(username==""){
+                document.getElementById("emailDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+                document.getElementById("emailDiv").innerHTML = "<input type='email' name='email' class='am-form-field am-round' id='email' value='' placeholder='请输入账号'>" +
+                    "<span class='am-icon-times'></span>";
+            }
+            else if (password == "") {
+                document.getElementById("passwordDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+                document.getElementById("passwordDiv").innerHTML = "<input type='password' name='password' class='am-form-field am-round' id='password' value='' placeholder='请输入密码'>" +
+                    "<span class='am-icon-times'></span>";
+            }
+            else {
+
+                var login = $.post("./LoginView",
+                    { "email": username, "password": password, "remember-me": remember }
+                    ).done(function (data) {
+                        if (data == 1){
+                            window.location = "../Home/Index";
+                        } else {
+                            document.getElementById("passwordDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+                            document.getElementById("passwordDiv").innerHTML = "<input type='password' name='password' class='am-form-field am-round' id='password' value='' placeholder='密码错误'>" +
+                                "<span class='am-icon-times'></span>";
+                        }
+                    }).fail(function (data) {
+                        document.getElementById("passwordDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+                        document.getElementById("passwordDiv").innerHTML = "<input type='password' name='password' class='am-form-field am-round' id='password' value='' placeholder='密码错误'>" +
+                            "<span class='am-icon-times'></span>";
+                    });
+            }
+        }
+</script>
+
+

@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayoutPage.cshtml";
+}
+<div class="admin-content-body">
+    <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf">
+            <strong class="am-text-primary am-text-lg">活动</strong>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="am-g">
+        <div class="am-u-sm-12 am-u-md-6">
+            <div class="am-btn-toolbar">
+                <div class="am-btn-group am-btn-group-xs">
+                    <a href="/ManageActivity/Add" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <div class="am-scrollable-horizontal">
+                <table class="am-table am-table-striped am-table-hover table-main am-text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>描述</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>折扣</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.activityList)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                                <td>@item.StartTime</td>
+                                <td>@item.EndTime</td>
+                                <td>@item.Discount</td>
+                                <td>
+                                    <div class="am-btn-toolbar">
+                                        <div class="am-btn-group am-btn-group-xs">
+                                            <a href="/ManageActivity/Detail?id=@item.ID" class="am-btn am-btn-default am-btn-xs am-text-secondary">
+                                                <span class="am-icon-file-o"></span> 查看
+                                            </a>
+                                            <a href="/ManageActivity/Edit?id=@item.ID" class="am-btn am-btn-default am-btn-xs am-text-secondary">
+                                                <span class="am-icon-pencil-square-o"></span> 编辑
+                                            </a>
+                                            <button onclick="deleteActivity(@item.ID)" class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only">
+                                                <span class="am-icon-trash-o"></span> 删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <ul class="am-pagination am-pagination-centered" style="font-size: 1.2rem;"></ul>
+        </div>
+    </div>
+</div>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="alert-success">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">删除成功</div>
+        <div class="am-modal-bd"></div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+        </div>
+    </div>
+</div>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="alert-fail">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">删除失败</div>
+        <div class="am-modal-bd"></div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    //获得浏览器参数
+    $.extend({
+        getUrlVars: function () {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        },
+        getUrlVar: function (name) {
+            return $.getUrlVars()[name];
+        }
+    });
+    //封装浏览器参数
+    var composeUrlParams = function () {
+        var param = '';
+        $.each($.getUrlVars(), function (i, item) {
+            if (item != 'page') {
+                var val = $.getUrlVar(item);
+                if (val) param += "&" + item + "=" + val;
+            }
+        });
+        return param;
+    };
+    var pagination = new Pagination({
+        wrap: $('.am-pagination'),
+        count: parseInt(@ViewBag.totalPages),
+        current: parseInt(@ViewBag.currentPage),
+        prevText: '上一页',
+        nextText: '下一页',
+        callback: function (page) {
+            console.log(this)
+            window.location.href = window.location.pathname + '?' + composeUrlParams() + '&page=' + page;
+        }.bind(this)
+    });
+    function deleteActivity(id) {
+        $.get('/ManageActivity/Delete?id=' + id, function (res) {
+            var data = JSON.parse(res)
+            if(data.Code == 200) {
+                $('#alert-success').modal({
+                    closeViaDimmer: false,
+                    onConfirm: function (options) {
+                        window.location.reload()
+                    }
+                })
+            } else {
+                $('#alert-fail').modal({
+                    closeViaDimmer: false,
+                    onConfirm: function (options) {
+                    }
+                })
+            }
+        })
+    }
+</script>

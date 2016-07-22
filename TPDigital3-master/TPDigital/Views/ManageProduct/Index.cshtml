@@ -1,0 +1,110 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayoutPage.cshtml";
+}
+
+<div class="admin-content-body">
+    <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf">
+            <strong class="am-text-primary am-text-lg">商品</strong>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="am-g">
+        <div class="am-u-sm-12 am-u-md-6">
+            <div class="am-btn-toolbar">
+                <div class="am-btn-group am-btn-group-xs">
+                    <a href="/ManageProduct/Add" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <div class="am-scrollable-horizontal">
+                <table class="am-table am-table-striped am-table-hover table-main am-text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>价格</th>
+                            <th>描述</th>
+                            <th>库存</th>
+                            <th>类别</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.products)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Price</td>
+                                <td>@item.Description</td>
+                                <td>@item.Inventory</td>
+                                <td>@item.Category.CategoryName</td>
+                                <td>
+                                    <div class="am-btn-toolbar">
+                                        <div class="am-btn-group am-btn-group-xs">
+                                            <a href="/ManageProduct/Detail?id=@item.ID" class="am-btn am-btn-default am-btn-xs am-text-secondary">
+                                                <span class="am-icon-file-o"></span> 查看
+                                            </a>
+                                            <a href="/ManageProduct/Edit?id=@item.ID" class="am-btn am-btn-default am-btn-xs am-text-secondary">
+                                                <span class="am-icon-pencil-square-o"></span> 编辑
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <ul class="am-pagination am-pagination-centered" style="font-size: 1.2rem;"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    //获得浏览器参数
+    $.extend({
+        getUrlVars: function () {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        },
+        getUrlVar: function (name) {
+            return $.getUrlVars()[name];
+        }
+    });
+    //封装浏览器参数
+    var composeUrlParams = function () {
+        var param = '';
+        $.each($.getUrlVars(), function (i, item) {
+            if (item != 'page') {
+                var val = $.getUrlVar(item);
+                if (val) param += "&" + item + "=" + val;
+            }
+        });
+        return param;
+    };
+    var pagination = new Pagination({
+        wrap: $('.am-pagination'),
+        count: 10,
+        current: parseInt($.getUrlVar('page')),
+        prevText: '上一页',
+        nextText: '下一页',
+        callback: function (page) {
+            console.log(this)
+            window.location.href = window.location.pathname + '?' + composeUrlParams() + '&page=' + page;
+        }.bind(this)
+    });
+</script>

@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewBag.Title = "PayOrder";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+
+<div class="am-g">
+    <div class="am-u-sm-9 am-u-sm-centered">
+        <div class="am-panel am-panel-primary">
+            <div class="am-panel-hd">
+                <h3 class="am-panel-title">订单商品一览</h3>
+            </div>
+            <table class="am-table">
+                <thead>
+                    <tr>
+                        <th>预览图</th>
+                        <th>名称</th>
+                        <th>价格</th>
+                        <th>数量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int k = 0; k < 3; k++)
+            {
+                        <tr>
+                            <td>
+                                <a href="http://www.baidu.com">
+                                    <img src="https://d2jpzphjpce52c.cloudfront.net/system/production/image/image/000/008/849/8849/wysiwyg_bb3bf4574bb34f2e8e79.jpg" width="50" height="50" />
+                                </a>
+                            </td>
+                            <td>
+                                <a href="http://www.baidu.com">商品 @k</a>
+                            </td>
+                            <td>100$</td>
+                            <td>X @k</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="am-panel-footer">订单日期和小计</div>
+        </div>
+        <hr />
+        <div class="am-panel am-panel-primary">
+            <div>
+                <img class="am-u-sm-centered" src="http://laravelacademy.org/wp-content/uploads/2015/10/85f11057a0da8e252691d4118377d73f.jpg" style="max-height:250px;" />
+            </div>
+            <hr />
+            <div class="am-g">
+                <div class="am-u-sm-9 am-u-sm-centered">
+                    <h3 class="am-text-center">密码</h3>
+                    <input type="password" class="am-form-field am-round" />
+                    <br />
+                    <button class="am-btn am-btn-primary am-center" style="width:200px;">提交</button>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

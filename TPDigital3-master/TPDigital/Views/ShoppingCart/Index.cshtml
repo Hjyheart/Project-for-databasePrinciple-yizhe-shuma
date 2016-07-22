@@ -1,0 +1,295 @@
+﻿@{
+    ViewBag.Title = "ShorpcartIndex";
+    Layout = "~/Views/Shared/_UserLayoutPage.cshtml";
+}
+
+@using TPDigital.Data_Access_Layer.Data_Access_Layer;
+@using TPDigital.Data_Access_Layer.Data_View_Model;
+@model List<ShoppingCart>
+
+<style type="text/css">
+    .checkbox {
+        margin: auto;
+    }
+</style>
+
+<h2>我的购物车</h2>
+<div class="am-panel am-panel-default">
+    <div class="am-panel-hd">
+        <h3 class="am-panel-title">购物车商品列表</h3>
+    </div>
+
+    <table class="am-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>预览图</th>
+                <th>名称</th>
+                <th>单价（元）</th>
+                <th>数量</th>
+                <th>金额（元）</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="shoppingcart">
+            @for (int k = 0; k < @Model.Count; k++)
+            {
+                <tr>
+                    <td class="am-text-middle">
+                        <p id="id-@k" style="visibility:hidden">@Model[k].ID</p>
+                        <input id="check-@k" type="checkbox" value="choose" onclick="resetList()">
+                    </td>
+                    <td>
+                        <a href="/Product/Show/@Model[k].ID">
+                            <img src="@ViewBag.imageList[k].URL" width="50" height="50" />
+                        </a>
+                    </td>
+                    <td class="am-text-middle">
+                        <a href="/Product/Show/@Model[k].ID">@Model[k].Product.Name</a>
+                    </td>
+                    <td class="am-text-middle" id="price-@k">@Model[k].Product.Price</td>
+                    <td class="am-text-middle">
+                        <a href="#" onclick="des(@k)">-</a>
+                        <input id="count-@k" value="@Model[k].Quantity" oninput="autoResetOne(@k)" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" style="width:32px;" />
+                        <a href="#" onclick="inc(@k)">+</a>
+                    </td>
+                    <td class="am-text-middle" id="total-@k"></td>
+                    <td class="am-text-middle" style="width: 120px;">
+                        <div class="am-align-right" style="margin-bottom:0;margin-left:0">
+                            <button id="btn-@(k)"
+                                    type="button"
+                                    class="am-btn am-btn-danger"
+                                    onclick="deleteProduct(this, @Model[k].ID)">
+                                移除商品
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="am-panel-footer">
+        <div class="am-cf">
+            <div class="am-align-left" style="margin-bottom:0;">
+                <button type="button"
+                        class="am-btn am-btn-warning"
+                        onclick="deleteAll()">
+                    批量移除商品
+                </button>
+            </div>
+            <div class="am-align-right" style="margin-bottom:0;">
+                <button type="button"
+                        class="am-btn am-btn-primary"
+                        onclick="submit()">
+                    结算
+                </button>
+            </div>
+            <div class="am-text-right">
+                <p id="total_price">总价：￥0</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+    n = @Model.Count;
+    window.onload = init();
+    table = document.getElementById("shoppingcart");
+
+    function init() {
+        for (var i = 0; i < n; i++) {
+            resetOne(i);
+        }
+    }
+
+    function resetList() {
+        var new_total_price = parseFloat(0);
+        for (var i = 0; i < n; i++) {
+            try{
+                var check = $("#check-"+i).prop("checked");
+                if (check) {
+                    var total = parseFloat($("#total-"+i).prop('innerHTML'));
+                    new_total_price += parseFloat(total.toFixed(2));
+                }
+            }
+            catch(e){
+                continue;
+            }
+        }
+        $("#total_price").prop('innerHTML', "合计：￥" + new_total_price.toFixed(2));
+    }
+
+    function des(i){
+        var obj = $("#count-"+i);
+        var count = parseInt(obj.val());
+        if(count < 2){
+            return;
+        }
+        count--;
+        $.post(
+            './Edit',
+            {'shoppingCartID': parseInt($("#id-" + i).prop('innerHTML')), 'count': count},
+            function (result) {
+                if (result >= 0) {
+                    alert('不能超过库存');
+                    obj.val(result);
+                    resetOne(i);
+                }
+                else if(result == -1){
+                    obj.val(count);
+                    resetOne(i);
+                }
+                else{
+                    alert("未知错误");
+                }
+            }
+        );
+    }
+
+    function inc(i){
+        var obj = $("#count-"+i);
+        var count = parseInt(obj.val()) + 1;
+        $.post(
+            './Edit',
+            {'shoppingCartID': parseInt($("#id-" + i).prop('innerHTML')), 'count': count},
+            function (result) {
+                if (result >= 0) {
+                    alert('不能超过库存');
+                    obj.val(result);
+                    resetOne(i);
+                }
+                else if(result == -1){
+                    obj.val(count);
+                    resetOne(i);
+                }
+                else{
+                    alert("未知错误");
+                }
+            }
+        );
+    }
+
+    function autoResetOne(i){
+        var obj = $("#count-"+i);
+        if(obj.val() == '' || obj.val() == '0'){
+            obj.val(1);
+            return;
+        }
+        var count = obj.val();
+        $.post(
+            './Edit',
+            {'shoppingCartID': parseInt($("#id-" + i).prop('innerHTML')), 'count': count},
+            function (result) {
+                if (result >= 0) {
+                    alert('不能超过库存');
+                    obj.val(result);
+                    resetOne(i);
+                }
+                else if(result == -1){
+                    obj.val(count);
+                    resetOne(i);
+                }
+                else{
+                    alert("未知错误");
+                }
+            }
+        );
+    }
+
+    function resetOne(i){
+        var price = parseFloat($('#price-'+i).prop('innerHTML'));
+        var count = parseInt($('#count-'+i).val());
+        $('#total-'+i).prop('innerHTML', (price * count).toFixed(2));
+        resetList();
+    }
+
+    function deleteProduct(obj, id){
+        $.get(
+            './Delete',
+            {'id':id},
+            function (result) {
+
+                if (result == 1) {
+                    deleteFromTable(obj);
+                    alert('删除成功！');
+
+                }
+                else {
+                    alert('删除失败！');
+                }
+            }
+        );
+    }
+
+    function deleteFromTable(obj){
+        var tr = obj.parentNode.parentNode.parentNode;
+        table.removeChild(tr);
+        resetList();
+    }
+
+    function deleteAll(){
+        var data = [];
+        for (var i = 0; i < n; i++) {
+            try{
+                var check = $("#check-"+i).prop("checked");
+                if (check) {
+                    data.push('shoppingCartIDs='+$("#id-" + i).prop('innerHTML'));
+                    var obj = document.getElementById("btn-" + i);
+                    deleteFromTable(obj);
+                }
+            }
+            catch(e){
+                continue;
+            }
+        }
+        $.post(
+            './DeleteSome',
+            data.join('&'),
+            function (result) {
+
+                if (result == 1) {
+                    alert('删除成功！');
+
+                }
+                else {
+                    alert('删除失败！');
+                }
+            }
+        );
+    }
+
+    function submit() {
+        var data = [];
+        for (var i = 0; i < n; i++) {
+            try{
+                var check = $("#check-"+i).prop("checked");
+                if (check) {
+                    data.push($("#id-" + i).prop('innerHTML'));
+                    var obj = document.getElementById("btn-" + i);
+                    deleteFromTable(obj);
+                }
+            }
+            catch(e){
+                continue;
+            }
+        }
+        if(data.length == 0) return;
+        StandardPost('../Order/Create', data);
+    }
+
+    function StandardPost(url,args) 
+    {
+        var form = $("<form method='post'></form>");
+        form.attr({"action":url});
+        for(arg in args){
+            var input = $("<input type='hidden'>");
+            input.attr({"name":"shoppingCartIDs"});
+            input.val(args[arg]);
+            form.append(input);
+        }
+        form.submit();
+    }
+</script>

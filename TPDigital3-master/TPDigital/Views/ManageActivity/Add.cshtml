@@ -1,0 +1,333 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_AdminLayoutPage.cshtml";
+}
+
+<div class="admin-content-body" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+    <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf">
+            <strong class="am-text-primary am-text-lg">新增活动</strong>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="am-g" style="margin-bottom: 12px;">
+        <form id="ajaxForm" action="/ManageActivity/ConfirmAdd" method="post" class="am-form">
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">活动名称</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input name="name" type="text" class="am-input-sm">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">活动描述</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input name="description" type="text" class="am-input-sm">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">开始日期</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input name="startTime" type="text" class="am-input-sm" placeholder="选择日期" data-am-datepicker />
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">结束日期</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input name="endTime" type="text" class="am-input-sm" placeholder="选择日期" data-am-datepicker />
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">图片</div>
+                <div id="upload" class="am-u-sm-8 am-u-md-8 am-u-end col-end">
+                    <select multiple name="imageIDs" style="display: none;">
+                        <option v-for="file in fileList" value="{{file.ID}}" selected>{{file.ID}}</option>
+                    </select>
+                    <div style="width: 100%;">
+                        <div v-for="file in fileList"
+                             class="am-animation-fade"
+                             v-bind:style="{ backgroundImage: 'url('+file.URL+')' }"
+                             style="display: inline-block;margin: 0 8px 8px 0;border: solid #a9a9a9 1px;position: relative;width: 150px; height: 150px;background-repeat: no-repeat;background-position: 50% 50%;background-size: cover;">
+                            <a v-on:click="deleteFile(file.ID)" class="am-close am-close-alt am-close-spin am-icon-times"
+                               style="position: absolute;top: 0;right: 0;margin: 4px;"></a>
+                        </div>
+                    </div>
+                    <div id="upload-container">
+                        <a class="am-btn am-btn-primary am-btn-xs" v-bind:style="{display: isUploading ? 'inline' : 'none'}">
+                            <i class="am-icon-spinner am-icon-spin"></i>正在上传中
+                        </a>
+                        <a id="pick-files" class="am-btn am-btn-primary am-btn-xs"
+                           v-bind:style="{display: isUploading ? 'none' : 'inline'}">上传图片</a>
+                    </div>
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">商品</div>
+                <div id="product" class="am-u-sm-8 am-u-md-8 am-u-end col-end">
+                    <select multiple name="productIDs" style="display: none;">
+                        <option v-for="item in activityProducts" value="{{item.ID}}" selected>{{item.ID}}</option>
+                    </select>
+                    <div style="width: 100%;">
+                        <div v-for="item in activityProducts" class="am-btn-group"
+                             style="display: inline-block; margin: 0 4px 4px 0;">
+                            <button type="button" class="am-btn am-btn-primary am-btn-xs">{{item.Name}}</button>
+                            <button v-on:click="removeProduct(item.ID)" type="button" class="am-btn am-btn-primary am-btn-xs">
+                                <i class="am-icon-trash-o"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="am-scrollable-horizontal">
+                        <table class="am-table am-table-striped am-table-hover table-main am-text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>价格</th>
+                                    <th>描述</th>
+                                    <th>库存</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in productList">
+                                    <td>{{item.Name}}</td>
+                                    <td>{{item.Price}}</td>
+                                    <td>{{item.Description | limitStrLen}}</td>
+                                    <td>{{item.Inventory}}</td>
+                                    <td>
+                                        <div class="am-btn-toolbar">
+                                            <div class="am-btn-group am-btn-group-xs">
+                                                <a v-on:click="addProduct(item)"
+                                                   class="am-btn am-btn-default am-btn-xs am-text-secondary">
+                                                    <span class="am-icon-file-o"></span> 添加
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="am-pagination am-pagination-centered" style="font-size: 1.2rem;"></ul>
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">折扣</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input name="discount" type="text" class="am-input-sm">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-8 am-u-sm-offset-4 am-u-md-4 am-u-md-offset-2">
+                    <button type="submit" class="am-btn am-btn-primary am-btn-xs">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="alert-success">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">保存成功</div>
+        <div class="am-modal-bd"></div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+        </div>
+    </div>
+</div>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="alert-fail">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">保存失败</div>
+        <div class="am-modal-bd"></div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+        </div>
+    </div>
+</div>
+
+<script>
+  Vue.filter('limitStrLen', function (value) {
+    if (value)
+      return value.substr(0, 15)
+    else
+      return value
+  })
+  var pagination
+  var productEl = new Vue({
+    el: '#product',
+    ready: function () {
+      this.$http.get('/ManageProduct/Json').then(function (res) {
+        var data = JSON.parse(res.data)
+        console.log(data)
+        var productList = JSON.parse(data.data)
+        productEl.updateProductList(productList)
+        pagination = new Pagination({
+          wrap: $('.am-pagination'), // 存放分页内容的容器
+          count: parseInt(data.totalPages), // 总页数
+          current: parseInt(data.currentPage), // 当前的页数（默认为1）
+          prevText: '上一页', // prev 按钮的文本内容
+          nextText: '下一页', // next 按钮的文本内容
+          callback: function (page) { // 每一个页数按钮的回调事件
+            // page 为当前点击的页数
+            console.log('callback', page, typeof page)
+          },
+          ajax: {
+            url: '/ManageProduct/Json?page=',
+            success: function (result) {
+              console.log('success', result, typeof result)
+              var data = JSON.parse(result)
+              pagination.count = parseInt(data.totalPages)
+              productEl.updateProductList(JSON.parse(data.data))
+            },
+            error: function (error) {
+              console.log(error)
+            }
+          }
+        })
+      }.bind(this))
+    },
+    data: {
+      activityProducts: [],
+      productList: []
+    },
+    methods: {
+      updateProductList: function (data) {
+        productEl.productList = data
+      },
+      addProduct: function (product) {
+        for (var i = 0, l = this.activityProducts.length; i < l; ++i) {
+          console.log(this.activityProducts[i], product)
+          if (this.activityProducts[i].ID === product.ID) return
+        }
+        this.activityProducts.push(product)
+      },
+      removeProduct: function (id) {
+        for (var i = 0, l = this.activityProducts.length; i < l; i++) {
+          if (this.activityProducts[i].ID == id) {
+            this.activityProducts.splice(i, 1)
+            return
+          }
+        }
+      }
+    }
+  })
+  var uploadEl = new Vue({
+    el: '#upload',
+    ready: function () {
+    },
+    data: {
+      fileList: [],
+      isUploading: false
+    },
+    methods: {
+      uploadStart: function () {
+        this.isUploading = true
+        $.AMUI.progress.start()
+      },
+      uploadProgres: function (file) {
+        $.AMUI.progress.set(file.percent / 100)
+      },
+      uploadFinish: function (res) {
+        this.fileList.push(res)
+        this.isUploading = false
+        $.AMUI.progress.done()
+      },
+      deleteFile: function (id) {
+        for (var i = 0, l = this.fileList.length; i < l; i++) {
+          if (this.fileList[i].ID == id) {
+            this.fileList.splice(i, 1)
+            return
+          }
+        }
+      }
+    }
+  })
+  var uploader = Qiniu.uploader({
+    runtimes: 'html5,flash,html4',    //上传模式,依次退化
+    browse_button: 'pick-files',       //上传选择的点选按钮，**必需**
+    uptoken_url: '/upload',            //Ajax请求upToken的Url，**强烈建议设置**（服务端提供）
+    //若未指定uptoken_url,则必须指定 uptoken ,uptoken由其他程序生成
+    //uptoken: '0kgFvvZPnN4KioE-Dah_t2MtLWH0S3ZREmXArbMI:d32IF99GoHeAmhlQjcNVKMCz-Yo=:eyJzY29wZSI6Imthbnh1YW4iLCJjYWxsQmFja1VybCI6Imh0dHA6Ly95aXpoZS5waWNmb29kLmNuL3VwbG9hZC9jYWxsYmFjayIsImNhbGxCYWNrQm9keSI6ImZpbGVuYW1lPSQoZm5hbWUpJmZpbGVzaXplPSQoZnNpemUpJmZpbGVza2V5PSQoa2V5KSIsImRlYWRsaW5lIjoxNDY5MDg1MTQ0LCJpbnNlcnRPbmx5IjowLCJkZXRlY3RNaW1lIjowLCJmc2l6ZUxpbWl0IjowLCJmc2l6ZU1pbiI6MCwiY2FsbGJhY2tGZXRjaEtleSI6MH0=',
+    unique_names: true, // 默认 false，key为文件名。若开启该选项，SDK为自动生成上传成功后的key（文件名）。
+    // save_key: true,   // 默认 false。若在服务端生成uptoken的上传策略中指定了 `sava_key`，则开启，SDK会忽略对key的处理
+    domain: 'http://oae23pecn.bkt.clouddn.com/',   //bucket 域名，下载资源时用到，**必需**
+    get_new_uptoken: false,  //设置上传文件的时候是否每次都重新获取新的token
+    container: 'upload-container',           //上传区域DOM ID，默认是browser_button的父元素，
+    max_file_size: '100mb',           //最大文件体积限制
+    flash_swf_url: 'http://cdn.bootcss.com/plupload/2.1.8/Moxie.swf',  //引入flash,相对路径
+    max_retries: 3,                   //上传失败最大重试次数
+    dragdrop: true,                   //开启可拖曳上传
+    drop_element: 'upload-container',        //拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传
+    chunk_size: '4mb',                //分块上传时，每片的体积
+    auto_start: true,                 //选择文件后自动上传，若关闭需要自己绑定事件触发上传
+    init: {
+      'FilesAdded': function (up, files) {
+        var count = 0;
+        for (var i = 0, l = files.length; i < l; ++i) {
+          if (!files[i] || !/image\//.test(files[i].type)) {
+            uploader.removeFile(files[i]);
+          } else {
+            ++count;
+          }
+        }
+        if (count >= 1) uploader.start();
+      },
+      'BeforeUpload': function (up, file) {
+        uploadEl.uploadStart(file)
+      },
+      'UploadProgress': function (up, file) {
+        uploadEl.uploadStart(file)
+      },
+      'FileUploaded': function (up, file, info) {
+        var res = JSON.parse(info);
+        uploadEl.uploadFinish(res)
+      },
+      'Error': function (up, err, errTip) {
+      },
+      'UploadComplete': function () {
+      }
+    }
+  });
+  $('#datetimepicker').datetimepicker({
+    format: 'yyyy-mm-dd hh:ii'
+  });
+  $(document).ready(function () {
+    var options = {
+      beforeSubmit: showRequest,
+      success: showResponse,
+      dataType: 'json'
+    };
+    $('#ajaxForm').submit(function () {
+      $(this).ajaxSubmit(options);
+      return false;
+    });
+  });
+  function showRequest(formData, jqForm, options) {
+    var queryString = $.param(formData);
+    console.log(formData);
+    console.log(queryString);
+    return true;
+  }
+  function showResponse(responseText, statusText, xhr, $form) {
+      console.log(responseText)
+      switch (responseText.Code) {
+          case '200':
+              $('#alert-success').modal({
+                  closeViaDimmer: false,
+                  onConfirm: function (options) {
+                      window.location.replace('/ManageActivity')
+                  }
+              });
+              break
+          default:
+              $('#alert-fail').modal({
+                  closeViaDimmer: false,
+                  onConfirm: function (options) {
+                  }
+              });
+              break
+      }
+  }
+</script>

@@ -1,0 +1,278 @@
+﻿@{
+    ViewBag.Title = "Show";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TPDigital.Data_Access_Layer.Data_View_Model;
+
+@{
+    var AddDate = ViewBag.product.AddDate;
+    var Category = ViewBag.product.Category;
+    var CommentList = ViewBag.product.CommentList;
+    var Description = ViewBag.product.Description;
+    var ID = ViewBag.product.ID;
+    var Inventory = ViewBag.product.Inventory;
+    var Name = ViewBag.product.Name;
+    var Price = ViewBag.product.Price;
+    var ProductImageList = ViewBag.product.ProductImageList;
+}
+
+<div class="am-g">
+    <div class="am-u-sm-9 am-u-sm-centered">
+        <div class="am-slider am-slider-default am-u-sm-7"
+             data-am-flexslider="{controlNav: 'thumbnails', directionNav: false, slideshow: false}">
+            <ul class="am-slides">
+                @for (int i = 0; i < ProductImageList.Count; i++)
+                {
+                    <li data-thumb="@ProductImageList[i].Image.URL">
+                        <img src="@ProductImageList[i].Image.URL" style="height:400px;" />
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="am-u-sm-5">
+            <section class="am-panel am-panel-primary">
+                <header class="am-panel-hd am-text-center">@Name</header>
+                <div class="am-panel-bd">
+                    <div class="am-panel am-panel-default">
+                        <div class="am-panel-bd">
+                            <h3>@Category.CategoryName</h3>
+                            @Description
+                        </div>
+                    </div>
+                    <span class="am-badge am-badge-danger am-text-xl am-center">￥ @Price</span>
+                    <hr />
+                    <span class="am-badge am-badge-secondary am-text-xl am-center">剩余@(Inventory)件</span>
+                    <hr />
+                    <div class="am-g">
+                        <input type="number" class="am-form-field am-round  am-center" required style="max-width:150px;" id="num" placeholder="数量" />
+                    </div>
+                    <hr />
+                    <div class="am-u-sm-centered">
+                        <button class="am-btn am-btn-success am-round am-u-sm-centered" onclick="buy()">立即购买</button>
+                        @if (ViewBag.state == 1)
+                        {
+                            <button class="am-btn am-btn-primary am-round am-u-sm-centered" id="isFav" onclick="fav()">收藏</button>
+                        }
+                        <button class="am-btn am-btn-warning am-round am-u-sm-centered" onclick="addToCart()">加入购物车</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="am-g">
+    <div class="am-u-sm-9 am-u-sm-centered">
+        <div class="am-tabs" data-am-tabs="{noSwipe: 1}" id="doc-tab-demo-1">
+            <ul class="am-tabs-nav am-nav am-nav-tabs">
+                <li class="am-active"><a href="javascript: void(0)">宝贝详情</a></li>
+                <li><a href="javascript: void(0)">评论</a></li>
+            </ul>
+            <div class="am-tabs-bd">
+                <div class="am-tab-panel am-active">
+
+                    <div id="canshu">
+                        @Html.Raw(ViewBag.Product.Details)
+                    </div>
+
+
+
+                    @for (int i = 0; i < ProductImageList.Count; i++)
+                    {
+                        <figure data-am-widget="figure" class="am am-figure am-figure-default " data-am-figure="{  pureview: 'true' }">
+                            <img src="@ProductImageList[i].Image.URL" data-rel="@ProductImageList[i].Image.URL" alt="" />
+                        </figure>
+                        <hr />
+                    }
+                </div>
+                <div class="am-tab-panel">
+                    <div class="am-g">
+                        <div class="am-u-sm-9 am-u-sm-centered">
+                            <script>var currentPage = "1";</script>
+                            @for (int i = 0; i < ViewBag.Product.CommentList.Count; i++)
+                            {
+                                string hide = "";
+                                if (i != 0)
+                                {
+                                    hide = "am-hide";
+                                }
+                                <div id="commentBlock-@i" class=@hide>
+                                    @for (int k = i * 20; k < i * 20 + 20; k++)
+                                    {
+                                        if (k < @ViewBag.Product.CommentList.Count)
+                                        {
+                                            <section class="am-panel am-panel-secondary">
+                                                <header class="am-panel-hd">
+                                                    <h3 class="am-panel-title">@ViewBag.Product.CommentList[k].UserName</h3>
+                                                </header>
+                                                <div class="am-panel-bd">
+                                                    @(ViewBag.Product.CommentList[k].Stars)星
+                                                    <hr />
+                                                    @(ViewBag.Product.CommentList[k].Content)
+                                                </div>
+                                                <div class="am-panel-footer">
+                                                    test
+                                                </div>
+                                            </section>
+                                        }
+                                    }
+                                </div>
+                            }
+                            <ul data-am-widget="pagination"
+                                class="am-pagination am-pagination-default am-u-sm-centered">
+                                <li class="am-pagination-prev ">
+                                    <a class="" onclick="pre()">上一页</a>
+                                </li>
+                                @for (int i = 0; i <= ViewBag.Product.CommentList.Count / 20; i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        <li class="am-active" id="page-1">
+                                            <a class="" onclick="turnPage(1)">1</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="" id="page-@(i+1)">
+                                            <a class="" onclick="turnPage(@(i+1))">@(i+1)</a>
+                                        </li>
+                                    }
+                                }
+
+                                <li class="am-pagination-next ">
+                                    <a onclick="next()" class="">下一页</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--成功弹框-->
+<div class="am-modal am-modal-alert" tabindex="-1" id="addtocartSuccess">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">恭喜</div>
+        <div class="am-modal-bd">
+            成功！
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn">确定</span>
+        </div>
+    </div>
+</div>
+<div class="am-modal am-modal-alert" tabindex="-1" id="addtocartFail">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">失败</div>
+        <div class="am-modal-bd">
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn">确定</span>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function fav(){
+        if($("#isFav").text() == "收藏"){
+            var fav = $.post("/Favorite/AddFavorite/@(ID)")
+            .done(function(data){
+                if(data == -1){
+                    $("#addtocartFail").modal();
+                }
+                else{
+                    $("#addtocartSuccess").modal();
+                    $("#isFav").text("取消收藏");
+                }
+                    
+        }).fail();
+        }else{
+            var fav = $.post("/Favorite/DeleteFavoriteByProduct/@(ID)")
+           .done(function(data){
+               if(data == 1){
+                   $("#addtocartSuccess").modal();
+                   $("#isFav").text("收藏");
+               }
+               else
+                   $("#addtocartFail").modal();
+           }).fail();
+        }
+    }
+
+    function buy() {
+        var quantity = $("#num").val();
+        if(quantity == null || quantity <= 0 || quantity > 300){
+            $("#addtocartFail").modal();
+            return;
+        }
+        StandardPost("/Order/Create", "@(ID)", quantity);
+    }
+
+    function addToCart() {
+        var count = $("#num").val();
+        if(count == null || count <= 0){
+            $("#addtocartFail").modal()
+        }
+        else{
+            $("#addtocartSuccess").modal();
+            var addcart = $.post("/ShoppingCart/AddToShoppingCart",
+                {"productID": @(ID), "quantity": count}
+                ).done(function(data){
+                }
+                    ).fail();
+        }
+    }
+
+    function turnPage(page) {
+        var a = 100;
+        var count = a / 20;
+        $("#commentBlock-" + currentPage).prop("class", "am-hide");
+        $("#commentBlock-" + page).prop("class", "");
+        document.getElementById("page-" + page).className="am-active";
+        document.getElementById("page-" + currentPage).className=" ";
+        currentPage = page;
+    }
+
+    function pre(){
+        var count = parseInt(currentPage);
+        if(count == 1)
+            return;
+        count = count - 1;
+        var page = count.toString();
+        $("#commentBlock-" + currentPage).prop("class", "am-hide");
+        $("#commentBlock-" + page).prop("class", "");
+        document.getElementById("page-" + page).className="am-active";
+        document.getElementById("page-" + currentPage).className=" ";
+        currentPage = page;
+    }
+
+    function next(){
+        var a = 100;
+        var count = parseInt(currentPage);
+        if(count == a / 20)
+            return;
+        count = count + 1;
+        var page = count.toString();
+        $("#commentBlock-" + currentPage).prop("class", "am-hide");
+        $("#commentBlock-" + page).prop("class", "");
+        document.getElementById("page-" + page).className="am-active";
+        document.getElementById("page-" + currentPage).className=" ";
+        currentPage = page;
+    }
+
+    function StandardPost(url, args1, args2) {
+        var form = $("<form method='post'></form>");
+        form.attr({ "action": url });
+        var input = $("<input type='hidden'>");
+        input.attr({ "name": "product_id" });
+        input.val(args1);
+        form.append(input);
+        var input = $("<input type='hidden'>");
+        input.attr({ "name": "quantity" });
+        input.val(args2);
+        form.append(input);
+        form.submit();
+    }
+</script>

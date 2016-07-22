@@ -1,0 +1,275 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+
+@{ 
+    var receiverList = ViewBag.receiverList;
+    var orderProductList = ViewBag.orderProductList;
+    var Count = orderProductList.Count;
+    var provinces = ViewBag.provinces;
+}
+
+<div class="am-g">
+    <div class="am-u-sm-9 am-u-sm-centered">
+        <div data-am-widget="list_news" class="am-list-news am-list-news-default">
+            <!--列表标题-->
+            <div class="am-list-news-hd am-cf">
+                <!--带更多链接-->
+                <h2>确认收货地址</h2>
+            </div>
+            <div class="am-list-news-bd">
+                <ul class="am-list" id="addr-list">
+                    @foreach (var addr in receiverList)
+                    {
+                        <li class="am-g">
+                            <a href="#" onclick="changeAddr(@addr.ID)" class="am-list-item-hd am-text-center" id="dizhi-@(addr.ID)"><span id="sheng-@(addr.ID)">@(addr.Location.PrivinceName) &nbsp; </span><span id="shi-@(addr.ID)">@(addr.Location.CityName) &nbsp;</span><span id="detial-@(addr.ID)">&nbsp;@(addr.AddrDetail)</span><span id="recevier-@(addr.ID)">@(addr.Name)&nbsp;</span><span id="phone-@(addr.ID)">@(addr.PhoneNumber)</span></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <button type="button"
+                id="add_button"
+                class="am-btn am-btn-success am-u-sm-centered"
+                style="width:200px;"
+                data-am-modal="{target: '#add-addr', closeViaDimmer: 0, width: 400, height: 680}">
+            添加地址
+        </button>
+    </div>
+</div>
+<div class="am-g">
+    <div class="am-u-sm-9 am-u-sm-centered">
+        <div class="am-list-news-hd am-cf">
+            <h2>&nbsp;确认订单信息</h2>
+        </div>
+        <hr />
+        <div class="am-panel am-panel-success">
+            <div class="am-panel-hd">
+                <div hidden="hidden" id="receiver-id"></div>
+                <h4 class="am-panel-title">订单</h4>
+            </div>
+            <div id="order" class="am-panel">
+                <div class="am-panel-bd">
+                    <hr />
+                    <div class="am-panel am-panel-default">
+                        <div class="am-panel-hd">
+                            <h3 class="am-panel-title">物流信息</h3>
+                            <h4 id="sheng">省</h4>
+                            <h4 id="shi">市</h4>
+                            <h4 id="details">具体信息</h4>
+                            <h4 id="recever">收件人</h4>
+                            <h4 id="phone">手机号</h4>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="am-panel am-panel-default">
+                        <div class="am-panel-hd">
+                            <h3 class="am-panel-title">商品列表</h3>
+                        </div>
+                        <table class="am-table">
+                            <thead>
+                                <tr>
+                                    <th>预览图</th>
+                                    <th>名称</th>
+                                    <th>价格</th>
+                                    <th>数量</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < orderProductList.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div hidden="hidden" id="product-@i" >@orderProductList[i].ProductID</div>
+                                            <div hidden="hidden" id="quantity-@i">@orderProductList[i].Quantity</div>
+                                            <a href="../Product/Show/@(orderProductList[i].ProductID)">
+                                                <img src="@orderProductList[i].ImageUrl" width="50" height="50" />
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="../Product/Show/@(orderProductList[i].ProductID)">@(orderProductList[i].Product.Name)</a>
+                                        </td>
+                                        <td>@orderProductList[i].Product.Price</td>
+                                        <td>X @orderProductList[i].Quantity</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="am-panel-footer">
+                            <p style="color:red;">￥ @ViewBag.totalPrice</p>
+                            <button class="am-btn am-btn-danger am-header-right" onclick="place_order()">确定并提交订单</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--成功-->
+<div class="am-modal am-modal-alert" tabindex="-1" id="success">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">恭喜</div>
+        <div class="am-modal-bd">
+            成功！！
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn">确定</span>
+        </div>
+    </div>
+</div>
+
+<div class="am-modal am-modal-no-btn" tabindex="-1" id="add-addr">
+    <div class="am-modal-dialog">
+        <div class="am-modal-bd">
+            <form class="am-form">
+                <fieldset>
+                    <legend>添加地址</legend>
+                    <input id="ID" type="hidden" value="">
+                    <div class="am-form-group">
+                        <label class="margin-left:0;" for="name">收货人</label>
+                        <input type="text" id="name" placeholder="输入收货人姓名">
+                    </div>
+
+                    <div class="am-form-group">
+                        <label for="province">省</label>
+                        <select name="province" id="province" onchange="changeSelect()">
+                            <option value="select_province" id="select_province">请输入省份</option>
+                            @foreach (var province in provinces)
+                            {
+                                <option id="@province" value="@province">@province</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <div class="am-form-group">
+                        <label for="city">市</label>
+                        <select name="city" id="city">
+                            <option value="select_city" id="select_city">请输入市区</option>
+                        </select>
+                    </div>
+
+                    <div class="am-form-group">
+                        <label for="addr_detail">详细地址</label>
+                        <input type="text" id="addr_detail" placeholder="请输入详细地址">
+                    </div>
+
+                    <div class="am-form-group">
+                        <label for="phone_number">联系电话</label>
+                        <input type="text" id="phone_number" placeholder="请输入联系电话" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                    </div>
+                    <span  class="am-btn am-btn-success" onclick="addAddr()">提交</span>
+                    <span class="am-btn am-btn-danger" onclick="cancel()">取消</span>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function changeSelect() {
+        var province = document.getElementById("province").value;
+        var login = $.post("/User/getCity",
+            { "province": province }
+            ).done(function (data) {
+                var citySelect = document.getElementById("city");
+                citySelect.options.length = 0;
+                citySelect.options.add(new Option("请输入市区", "select"));
+                for (var i = 0; i < data.length; i++) {
+                    citySelect.options.add(new Option(data[i], data[i]));
+                }
+
+            }).fail(function (data) {
+                alert("fail");
+            });
+    }
+
+    function changeAddr(add) {
+        var sheng = $("#sheng-" + add).text();
+        var shi = $("#shi-" + add).text();
+        var detial = $("#detial-" + add).text();
+        var recevier = $("#recevier-" + add).text();
+        var phone = $("#phone-" + add).text();
+
+        $("#sheng").text(sheng);
+        $("#shi").text(shi);
+        $("#details").text(detial);
+        $("#recever").text(recevier);
+        $("#phone").text(phone);
+        $("#receiver-id").text(add);
+    }
+    function place_order() {
+        var products = [];
+        var quantity = [];
+        var receieverId = "";
+        var count = @Count;
+
+        for(var i = 0; i < count; i++){
+            products.push($("#product-" + i).text());
+            quantity.push($("#quantity-" + i).text());
+        }
+        receieverId = $("#receiver-id").text();
+        if(receieverId == null || receieverId == ""){
+            alert("请输入地址！");
+            return;
+        }
+        StandardPost("./CreateOrder", products, quantity, receieverId);
+    }
+    function addAddr() {
+        var name = $("#name").val();
+        var city = $("#city").val();
+        var province = $("#province").val();
+        var addr_detail = $("#addr_detail").val();
+        var phone_number = $("#phone_number").val();
+
+        currentAddr = name;
+
+        $("#sheng").text(province);
+        $("#shi").text(city);
+        $("#details").text(addr_detail);
+        $("#recever").text(name);
+        $("#phone").text(phone_number);
+
+
+        var axiba = $.post("../User/AddAddr",
+            { "name": name, "addrDetail": addr_detail, "phoneNumber": phone_number, "privinceName": province, "cityName": city }
+            ).done(function (data) {
+                $("#addr-list").append("<li class='am-g'><a href='#' class='am-list-item-hd am-text-center' onClick=\"changeAddr(\'" + data + "\')\" id='dizhi-" + data + "'><span id='sheng-" + data + "'>" + province + "&nbsp; </span><span id='shi-" + data + "'>" + city + "&nbsp;</span><span  id='detial-" + data + "'>&nbsp;" + addr_detail + "</span><span id='recevier-" + data + "'>" + name + "&nbsp;</span><span id='phone-" + data + "'>" + phone_number + "</span></a></li>");
+                $("#add-addr").modal("close");
+                $("#receiver-id").text(data);
+            }).fail()
+    }
+    function cancel() {
+        $("#add-addr").modal("close");
+    }
+
+
+
+    function StandardPost(url, args1, args2, receiver_id) {
+        var form = $("<form method='post'></form>");
+        form.attr({ "action": url });
+        for (arg in args1) {
+            var input = $("<input type='hidden'>");
+            input.attr({ "name": "productIDList" });
+            input.val(args1[arg]);
+            form.append(input);
+        }
+        for (arg in args2) {
+            var input = $("<input type='hidden'>");
+            input.attr({ "name": "quantityList" });
+            input.val(args2[arg]);
+            form.append(input);
+        }
+        
+        var input = $("<input type='hidden'>");
+        input.attr({ "name": "receiverId" });
+        input.val(receiver_id);
+        form.append(input);
+
+        form.submit();
+    }
+</script>

@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewBag.Title = "ActivityIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@{ 
+    var activities = ViewBag.activities;
+    var images = ViewBag.images;
+}
+
+
+<div class="am-g">
+    <button class="am-btn am-btn-success am-center">
+        <h1>活动</h1>
+        <h5>当前共有@(activities.Count)项活动</h5>
+    </button>
+    <br />
+    <div class="am-u-sm-centered">
+        @for (int i = 0; i < activities.Count; i++)
+        {
+            <div class="am-u-sm-4 am-u-sm-centered">
+                <h1 class="am-badge-warning am-round am-center am-text-center">@(activities[i].Name)</h1>
+            </div>
+            <div class="am-u-sm-8 am-u-sm-centered">
+                <div class="am-slider am-slider-default am-slider-carousel" id="@(activities[i].ID)"
+                     data-am-flexslider="{itemWidth: 600, itemMargin: 5, slideshow: false}" onclick="specific(@(activities[i].ID))">
+                    <ul class="am-slides">
+                        @for (int k = 0; k < @activities[i].ActivityImageList.Count; k++)
+                        {
+                            <li>
+                                <a href="/Activity/Detail/@(activities[i].ID)">
+                                    <img src="@activities[i].ActivityImageList[k].Image.URL" style="height:400px;"/>
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+            </div>
+            <div class="am-text-center">
+                <h3>@(activities[i].Description)</h3>
+            </div>
+            <p class="am-text-center">@(activities[i].StartTime)</p>
+            <hr />
+        }
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.min.js"></script>
+<script>
+    function specific(id) {
+        window.location = "../Activity/Detail/" + id;
+    }
+</script>
+

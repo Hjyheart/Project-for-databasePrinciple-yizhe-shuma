@@ -1,0 +1,306 @@
+﻿@{
+    ViewBag.Title = "ShowInf";
+    Layout = "~/Views/Shared/_UserLayoutPage.cshtml";
+}
+
+@using TPDigital.Data_Access_Layer.Data_View_Model;
+@model TPDigital.Data_Access_Layer.Data_View_Model.User
+
+
+@using TPDigital.Data_Access_Layer.Data_View_Model;
+
+<style>
+    
+</style>
+
+<h2>账户信息</h2>
+
+<div class="am-form-group am-form-file">
+    <button type="button" class="am-btn am-btn-primary am-btn-sm">
+        <i class="am-icon-cloud-upload"></i> 上传头像
+    </button>
+    <input type="file" multiple>
+</div>
+
+<div class="am-panel-group" id="name-info">
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd" data-am-collapse="{parent: '#name-info', target: '#name-panel'}">
+            <div class="am-cf">
+                <div class="am-align-left" style="margin:0;">
+                    <h4 class="am-panel-title am-collapsed">用户名</h4>
+                </div>
+                <div class="am-align-right" style="margin:0;">
+                    <a href="#" style="margin:0;">编辑</a>
+                </div>
+                <div class="am-text-center">
+                    <p style="margin:0;" id="old-name">@Model.Name</p>
+                </div>
+            </div>
+        </div>
+        <div id="name-panel" class="am-panel-collapse am-collapse" style="height: 0px;">
+            <div class="am-panel-bd">
+                <div>
+                    <form class="am-form am-form-horizontal">
+                        <div class="am-form-group">
+                            <label for="name" class="am-u-sm-2 am-form-label">新用户名</label>
+                            <div class="am-u-sm-10">
+                                <input type="text" id="name" placeholder="请输入新用户名">
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <div class="am-u-sm-10 am-u-sm-offset-2">
+                                <input type="button" onclick="submitName()" class="am-btn am-btn-primary" value="保存"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="am-panel-group" id="email-info">
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd" data-am-collapse="{parent: '#email-info', target: '#email-panel'}">
+            <div class="am-cf">
+                <div class="am-align-left" style="margin:0;">
+                    <h4 class="am-panel-title am-collapsed">邮箱</h4>
+                </div>
+                <div class="am-align-right" style="margin:0;">
+                    <a href="#" style="margin:0;">编辑</a>
+                </div>
+                <div class="am-text-center">
+                    <p style="margin:0;" id="old-email">@Model.Email</p>
+                </div>
+            </div>
+        </div>
+        <div id="email-panel" class="am-panel-collapse am-collapse" style="height: 0px;">
+            <div class="am-panel-bd">
+                <div>
+                    <form class="am-form am-form-horizontal">
+                        <div class="am-form-group">
+                            <label for="email" class="am-u-sm-2 am-form-label">新邮箱</label>
+                            <div class="am-u-sm-10">
+                                <input type="email" id="email" placeholder="请输入新邮箱">
+                            </div>
+                        </div>
+
+                        <div class="am-form-group">
+                            <div class="am-u-sm-10 am-u-sm-offset-2">
+                                <input type="button" value="保存" onclick="submitEmail()" class="am-btn am-btn-primary"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="am-panel-group" id="phone-number-info">
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd" data-am-collapse="{parent: '#phone-number-info', target: '#phone-number-panel'}">
+            <div class="am-cf">
+                <div class="am-align-left" style="margin:0;">
+                    <h4 class="am-panel-title am-collapsed">手机号</h4>
+                </div>
+                <div class="am-align-right" style="margin:0;">
+                    <a href="#" style="margin:0;">编辑</a>
+                </div>
+                <div class="am-text-center">
+                    <p style="margin:0;" id="old-phone-number">@Model.PhoneNumber</p>
+                </div>
+            </div>
+        </div>
+        <div id="phone-number-panel" class="am-panel-collapse am-collapse" style="height: 0px;">
+            <div class="am-panel-bd">
+                <div>
+                    <form class="am-form am-form-horizontal">
+                        <div class="am-form-group">
+                            <label for="phone-number" class="am-u-sm-2 am-form-label">新手机号</label>
+                            <div class="am-u-sm-10" style="padding-top:8px;">
+                                <input onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" id="phone-number" placeholder="请输入新手机号">
+                                <input type="button" id="btn" onclick="askForCheck()" class="am-btn am-btn-primary" style="padding:4px;margin-left:20px;" value="发送验证码"/>
+                            </div>
+                        </div>
+                    </form>
+                    <form class="am-form am-form-horizontal">
+                        <div class="am-form-group">
+                            <label for="ver-code" class="am-u-sm-2 am-form-label">验证码</label>
+                            <div class="am-u-sm-10" style="padding-top:8px;">
+                                <input id="ver-code" placeholder="请输入验证码">
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <div class="am-u-sm-10 am-u-sm-offset-2">
+                                <input type="button" onclick="submitPhone()" class="am-btn am-btn-primary" value="保存"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="am-panel-group" id="password-info">
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd" data-am-collapse="{parent: '#password-info', target: '#password-panel'}">
+            <div class="am-cf">
+                <div class="am-align-left" style="margin:0;">
+                    <h4 class="am-panel-title am-collapsed">修改密码</h4>
+                </div>
+                <div class="am-align-right" style="margin:0;">
+                    <a href="#" style="margin:0;">编辑</a>
+                </div>
+            </div>
+        </div>
+        <div id="password-panel" class="am-panel-collapse am-collapse" style="height: 0px;">
+            <div class="am-panel-bd">
+                <div>
+                    <form class="am-form am-form-horizontal">
+                        <div class="am-form-group">
+                            <label for="old-password" class="am-u-sm-2 am-form-label">原密码</label>
+                            <div class="am-u-sm-10">
+                                <input id="old-password" type="password" placeholder="请输入原密码">
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="new-password" class="am-u-sm-2 am-form-label">新密码</label>
+                            <div class="am-u-sm-10">
+                                <input id="new-password" type="password" placeholder="请输入新密码">
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <label for="new-password-2" class="am-u-sm-2 am-form-label">确认密码</label>
+                            <div class="am-u-sm-10">
+                                <input id="new-password-2" type="password" placeholder="请再次输入新密码">
+                            </div>
+                        </div>
+                        <div class="am-form-group">
+                            <div class="am-u-sm-10 am-u-sm-offset-2">
+                                <input type="button" onclick="submitPassword()" class="am-btn am-btn-primary" value="保存"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+
+    function submitName() {
+        var name = $('#name').val();
+        if (name == '') return;
+        var old_name = $('#old-name').prop('innerHTML');
+        if (name == old_name) {
+            alert('新用户名和旧用户名不能相同！');
+            return;
+        }
+        $.post(
+            './ChangeName',
+            { 'name': name },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('您填写的新用户名已存在，请重新填写');
+                }
+            }
+        );
+    }
+
+    function submitEmail() {
+        var email = $('#email').val();
+        if (email == '') return;
+        var old_email = $('#old-email').prop('innerHTML');
+        if (email == old_email) {
+            alert('新邮箱和旧邮箱不能相同！');
+            return;
+        }
+        $.post(
+            './ChangeEmail',
+            { 'email': email },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('您填写的新邮箱已存在，请重新填写');
+                }
+            }
+        );
+    }
+
+    function askForCheck() {
+        var phone = $('#phone-number').val();
+        if (phone == '') return;
+        var old_phone = $('#old-phone-number').prop('innerHTML');
+        if (phone == old_phone) {
+            alert('新手机号和旧手机号不能相同！');
+            return;
+        }
+        $.post(
+            './sendMessage',
+            { 'phone_number': phone },
+            function (result) {
+                if (result == 1) {
+                    alert('发送验证码成功！');
+                    $('#btn').attr({ 'disabled': 'disabled' });
+                }
+                else {
+                    alert('发送验证码失败');
+                }
+            }
+        );
+    }
+
+    function submitPhone() {
+        var phone = $('#phone-number').val();
+        if (phone == '') return;
+        var vercode = $('#ver-code').val();
+        if (vercode == '') return;
+        $.post(
+            './ChangePhone',
+            { 'phone': phone, 'vercode': vercode },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('手机验证失败！');
+                }
+            }
+        );
+    }
+
+    function submitPassword() {
+        var old_password = $('#old-password').val();
+        var new_password = $('#new-password').val();
+        var new_password_2 = $('#new-password-2').val();
+        if (old_password == '' || new_password == '' || new_password_2 == '') return;
+        if (old_password == new_password) {
+            alert('新密码和旧密码不能相同！');
+            return;
+        }
+        if (new_password != new_password_2) return;
+        $.post(
+            './ChangePassword',
+            { 'oldPassword': old_password, 'newPassword': new_password },
+            function (result) {
+                if (result == 1) {
+                    window.location.reload();
+                }
+                else {
+                    alert('修改密码失败！');
+                }
+            }
+        );
+    }
+</script>

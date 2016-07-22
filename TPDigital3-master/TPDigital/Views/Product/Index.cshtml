@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--热门商品-->
+<section class="am-center">
+    <button class="am-btn am-btn-danger am-center" style="width:100%;">
+        <h1>一 &nbsp &nbsp 折</h1>
+        <h5>热卖</h5>
+    </button>
+    @for (int i = 0; i < 20; i++)
+    {
+        <div class="am-g am-g-fixed am-u-sm-centered">
+            <div class="col-md-6 am-u-md-6" data-scrollspy="{animation: 'slide-top', delay: 500}">
+                <a href="#">
+                    <img class="am-img-responsive img am-center" src="http://s.amazeui.org/assets/2.x/i/ui/foundation.png" alt="foundation" />
+                    <h2 class="am-text-center">热门商品1</h2>
+                </a>
+                <p class="am-text-center">热门商品1简介</p>
+            </div>
+            <div class="col-md-6 am-u-md-6" data-scrollspy="{animation: 'slide-top', delay: 500}">
+                <a href="#">
+                    <img class="am-img-responsive img am-center" src="http://s.amazeui.org/assets/2.x/i/ui/foundation.png" alt="foundation" />
+                    <h2 class="am-text-center">热门商品2</h2>
+                </a>
+                <p class="am-text-center">热门商品2简介</p>
+            </div>
+        </div>
+    }
+</section>
+
+

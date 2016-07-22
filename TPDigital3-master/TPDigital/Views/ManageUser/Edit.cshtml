@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_AdminLayoutPage.cshtml";
+}
+
+<div class="admin-content-body">
+    <div class="am-cf am-padding am-padding-bottom-0">
+        <div class="am-fl am-cf">
+            <strong class="am-text-primary am-text-lg">修改角色</strong>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="am-g">
+        <form id="ajaxForm" action="/ManageUser/ConfirmEdit?id=@ViewBag.user.ID" method="post" class="am-form">
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">ID</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" value="@ViewBag.user.ID" >
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">用户名</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" value="@ViewBag.user.Name">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">手机号</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" value="@ViewBag.user.PhoneNumber">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">邮箱</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <input type="text" class="am-input-sm" value="@ViewBag.user.Email">
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-4 am-u-md-2 am-text-right">角色</div>
+                <div class="am-u-sm-8 am-u-md-4 am-u-end col-end">
+                    <label class="am-checkbox">
+                        <input name="roles" type="checkbox" value="201" data-am-ucheck checked> 普通用户
+                    </label>
+                    <label class="am-checkbox">
+                        <input name="roles" type="checkbox" value="101" data-am-ucheck> 管理员
+                    </label>
+                    <label class="am-checkbox">
+                        <input name="roles" type="checkbox" value="202" data-am-ucheck> 黑名单
+                    </label>
+                </div>
+            </div>
+            <div class="am-g am-margin-top">
+                <div class="am-u-sm-8 am-u-sm-offset-4 am-u-md-4 am-u-md-offset-2">
+                    <button type="submit" class="am-btn am-btn-primary am-btn-xs">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="alert-success">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">保存成功</div>
+        <div class="am-modal-bd"></div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+        </div>
+    </div>
+</div>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="alert-fail">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">保存失败</div>
+        <div class="am-modal-bd"></div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var options = {
+            beforeSubmit: showRequest,
+            success: showResponse,
+            dataType: 'json'
+        };
+        $('#ajaxForm').submit(function () {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function showRequest(formData, jqForm, options) {
+        var queryString = $.param(formData);
+        console.log(formData);
+        console.log(queryString);
+        return true;
+    }
+    function showResponse(responseText, statusText, xhr, $form) {
+        switch (responseText.Code) {
+            case '200':
+                $('#alert-success').modal({
+                    onConfirm: function (options) {
+                        window.location.replace('/ManageActivity')
+                    }
+                });
+                break
+            default:
+                $('#alert-fail').modal({
+                    onConfirm: function (options) { }
+                });
+                break
+        }
+    }
+</script>
+
+

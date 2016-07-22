@@ -1,0 +1,60 @@
+﻿
+@using TPDigital.Models;
+@using TPDigital.Data_Access_Layer.Data_View_Model;
+@{
+    ViewBag.Title = "myFav";
+    Layout = "~/Views/Shared/_UserLayoutPage.cshtml";
+    List<TP_FAVORITE> favs = ViewBag.Favs;
+    List<Product> pros = ViewBag.Pros;
+}
+<h2>我的收藏</h2>
+<div class="am-panel am-panel-default">
+    <div class="am-panel-hd">
+        <h3 class="am-panel-title">收藏商品列表</h3>
+    </div>
+
+    <ul id="favorite" class="am-avg-sm-4 am-thumbnails">
+        @for (int i=0;i<favs.Count;i++)
+        {
+            <li>
+                <div>
+                    <div class="am-panel am-panel-default am-scrollspy-init am-scrollspy-inview am-animation-fade" data-am-scrollspy="{animation: 'fade', delay:100}">
+                        <div class="am-panel-bd">
+                            <img src="@pros[i].ProductImageList[0].Image.URL" style="width:100%;height:80%" />
+                        </div>
+                        <div class="am-panel-footer" style="padding:5px;">
+                            <div>
+                                <div class="am-cf">
+                                    <p class="am-align-left am-text-danger" style="margin:0;">@favs[i].TP_PRODUCT.PRICE</p>
+                                    <a class="am-align-right" id="@favs[i].ID" href="#" style="margin:0;" onclick="deleteFavorite(@favs[i].ID)">取消收藏</a>
+                                </div>
+                                <h2 style="margin:0;"><a href="#">@pros[i].Name</a></h2>
+                                <p style="margin:0;">@pros[i].Description</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+
+<script src="~/Scripts/jquery.min.js"></script>
+
+<script>
+    function deleteFavorite(id) {
+        $.get(
+            './DeleteFavorite',
+            {'id': id},
+            function(result){
+                if(result == 1){
+                    window.location.reload();
+                }
+                else{
+                    alert('删除失败！');
+                }
+            }
+        )    
+    }
+</script>

@@ -1,0 +1,146 @@
+﻿
+@{
+    ViewBag.Title = "RegisterView";
+    Layout = "~/Views/Shared/_LoginLayoutPage.cshtml";
+}
+<style>
+    .header {
+        text-align: center;
+    }
+
+        .header h1 {
+            font-size: 200%;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .header p {
+            font-size: 14px;
+        }
+</style>
+<div class="header">
+    <div class="am-g">
+        <h1>欢迎注册一折数码</h1>
+    </div>
+    <hr />
+</div>
+<div class="am-g">
+    <div class="am-u-sm-4 am-u-sm-centered">
+        
+        <form class="am-form">
+            @Html.AntiForgeryToken()
+            <label for="email">邮箱:</label>
+            <div id="emailDiv" class="am-form-feedback am-form-group">
+                <input type="email" name="email" class="am-form-field am-round" id="email" value="">
+            </div>
+            <br />
+            <label for="phone">手机:</label>
+            <div id="phoneDiv" class="am-form-feedback am-form-group">
+                <input type="text" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" name="phone" class="am-form-field am-round" id="phone" value="">
+             </div>
+            <label for="vercode">验证码:</label>
+            <div>
+                <input type="text" id="vercode" name="vercode" class="am-form-field am-round" style="display:inline-block;width:72%;" />
+                <input id="btn" class="am-btn am-btn-primary am-round" type="button" value="获取验证码" style="height:37px;width:26%;font-size:14px;" onclick="askForCheck()"/>
+            </div>
+            <br>
+            <label for="name">用户名:</label>
+            <div id="nameDiv" class="am-form-feedback am-form-group">
+                <input type="text" name="name" class="am-form-field am-round" id="name" value="">
+            </div>
+            <br>
+            <label for="password">密码:</label>
+            <div class="am-form-feedback am-form-group" id="passwordDiv">
+                <input type="password" name="password" class="am-form-field am-round" id="password" value="">
+            </div>
+            <br>
+            <label for="confirmPassword">确认密码:</label>
+            <div class="am-form-feedback am-form-group" id="confirmPasswordDiv">
+                <input type="password" name="confirmPassword" class="am-form-field am-round" id="confirmPassword" value="">
+            </div>
+            <br />
+            <div class="am-cf">
+                <input type="button" onclick="register()" name="" value="确认注册" class="am-btn am-btn-primary am-btn-sm am-fl">
+            </div>
+            <hr>
+        </form>
+    </div>
+</div>
+
+
+<script>
+
+    function askForCheck() {
+        var phone = $('#phone').val();
+        if (phone == '') return;
+        $.post(
+            './sendMessage',
+            { 'phone_number': phone },
+            function (result) {
+                if (result == 1) {
+                    alert('发送验证码成功！');
+                    $('#btn').attr({ 'disabled': 'disabled' });
+                }
+                else {
+                    alert('发送验证码失败');
+                }
+            }
+        );
+    }
+
+    function register() {
+
+        var email = document.getElementById("email").value;
+        var phone = document.getElementById("phone").value;
+        var name = document.getElementById("name").value;
+        var password = document.getElementById("password").value;
+        var confirm = document.getElementById("confirmPassword").value;
+        var vercode = $('#vercode').val();
+
+        // 初始化样式
+        document.getElementById("emailDiv").className = "am-form-feedback am-form-group";
+        document.getElementById("emailDiv").innerHTML = "<input type='email' name='email' class='am-form-field am-round' id='email' value=''>";
+        document.getElementById("phoneDiv").className = "am-form-group am-form-feedback";
+        document.getElementById("phoneDiv").innerHTML = "<input type='text' name='phone' class='am-form-field am-round' id='phone' value=''>";
+        document.getElementById("passwordDiv").className = "am-form-group am-form-feedback";
+        document.getElementById("passwordDiv").innerHTML = "<input type='password' name='password' class='am-form-field am-round' id='password' value=''>";
+
+        if (email == "") {
+            document.getElementById("emailDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+            document.getElementById("emailDiv").innerHTML = "<input type='email' name='email' class='am-form-field am-round' id='email' value='''>" +
+                "<span class='am-icon-times'></span>";
+        }
+        else if (phone == "") {
+            document.getElementById("phoneDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+            document.getElementById("phoneDiv").innerHTML = "<input type='text' name='phone' class='am-form-field am-round' id='phone' value=''>" +
+                "<span class='am-icon-times'></span>";
+        }
+        else if (password == "") {
+            document.getElementById("passwordDiv").className = "am-form-group am-form-error am-form-icon am-form-feedback";
+            document.getElementById("passwordDiv").innerHTML = "<input type='password' name='password' class='am-form-field am-round' id='password' value=''>" +
+                "<span class='am-icon-times'></span>";
+        }
+        else if (password != confirm) {
+            alert("两次密码不同");
+            return;
+        }
+        else {
+            var login = $.post("./Register",
+                { "email": email, "password": password, "phone": phone, "name": name, 'vercode': vercode }
+                ).done(function (data) {
+                    alert(data);
+                    if (data == 1) {
+                        window.location = "../User/LoginView";
+                    } else {
+                        alert("faile");
+                    }
+                }).fail(function (data) {
+
+                });
+        }
+    }
+</script>
+
+
+
+
